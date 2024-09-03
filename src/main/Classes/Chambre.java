@@ -1,16 +1,16 @@
 package main.Classes;
 
 public class Chambre {
-    private int id;
+    private static  int id=0;
     private String type;
     
     private int quantity;
     private Hotel hotel;
 
-    public Chambre(int id, String type, String name,String location, int quantity) {
-        this.id = id;
+    public Chambre(String type, Hotel hotel, int quantity) {
+        this.id=++id;
         this.type = type;
-        this.hotel = new Hotel(name,location);
+        this.hotel = hotel;
         this.quantity = quantity;
     }
 
@@ -54,6 +54,8 @@ public class Chambre {
         this.quantity = quantity;
     }
 
-
+    public Hotel getHotel() {
+        return hotel;
+    }
 
 }

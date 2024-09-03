@@ -1,21 +1,21 @@
 package main.Classes;
 
 public class User {
-private int cnie;
+private String cnie;
 private String FirstName;
 private String LastName;
 
-    public User(int cnie, String firstName, String lastName) {
+    public User(String cnie, String firstName, String lastName) {
         this.cnie = cnie;
         this.FirstName = firstName;
         this.LastName = lastName;
     }
 
-    public int getCnie() {
+    public String getCnie() {
         return cnie;
     }
 
-    public void setCnie(int cnie) {
+    public void setCnie(String cnie) {
         this.cnie = cnie;
     }
 
