@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Reservations {
-    private int id = 0;
+    private static int id = 0;
     private User user;
     private Chambre room;
     private LocalDate checkin;
@@ -19,6 +19,9 @@ public class Reservations {
         this.checkout = checkout;
     }
 
+    public  int getId() {
+        return id;
+    }
 
     public LocalDate getCheckin() {
         return checkin;
@@ -73,6 +76,8 @@ public class Reservations {
         }
 
     }
+
+
 
 
 }
