@@ -1,17 +1,16 @@
-package main.Classes;
+package main.Entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Reservations {
     private static int id = 0;
-    private User user;
+    private Customer user;
     private Chambre room;
     private LocalDate checkin;
     private LocalDate checkout;
     private static int numberCounter=0;
 
-    public Reservations(User user, Chambre room,LocalDate checkin, LocalDate checkout) {
+    public Reservations(Customer user, Chambre room, LocalDate checkin, LocalDate checkout) {
         this.id++;
         this.user = user;
         this.room = room;
@@ -39,11 +38,11 @@ public class Reservations {
         this.checkout = checkout;
     }
 
-    public User getUser() {
+    public Customer getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Customer user) {
         this.user = user;
     }
 

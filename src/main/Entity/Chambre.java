@@ -1,17 +1,27 @@
-package main.Classes;
+package main.Entity;
 
 public class Chambre {
     private static  int id=0;
+
     private String type;
-    
     private int quantity;
     private Hotel hotel;
+    private double prix;
 
-    public Chambre(String type, Hotel hotel, int quantity) {
+    public Chambre( Hotel hotel, String type,int quantity,double prix) {
         this.id=++id;
-        this.type = type;
         this.hotel = hotel;
+        this.type=type;
         this.quantity = quantity;
+        this.prix=prix;
+    }
+
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
     }
 
     public int getId() {

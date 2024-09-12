@@ -1,4 +1,4 @@
-package main.Classes;
+package main.Entity;
 
 public class Hotel {
 

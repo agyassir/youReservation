@@ -1,4 +1,8 @@
-import main.Classes.*;
+import main.Entity.*;
+import main.Repository.Implementation.UserRepositoryImpl;
+import main.Repository.UserRepositoryInterface;
+import main.Service.Implementation.UserServiceImpl;
+import main.Service.UserServiceInterface;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,16 +19,31 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Hotel firstHotel = new Hotel("Ronaldo's Hotel", "Marrakech");
-        Chambre room1 = new Chambre("Double Bed", firstHotel, 20);
-        Chambre room2 = new Chambre("VIP", firstHotel, 10);
-        Chambre room3 = new Chambre("Single Queen Bed", firstHotel, 50);
-        Hotels.add(firstHotel);
-        rooms.add(room1);
-        rooms.add(room2);
-        rooms.add(room3);
-//System.out.println(room3.getId());
-        menu();
+//        Hotel firstHotel = new Hotel("Ronaldo's Hotel", "Marrakech");
+//        Chambre room1 = new Chambre("Double Bed", firstHotel, 20);
+//        Chambre room2 = new Chambre("VIP", firstHotel, 10);
+//        Chambre room3 = new Chambre("Single Queen Bed", firstHotel, 50);
+//        Hotels.add(firstHotel);
+//        rooms.add(room1);
+//        rooms.add(room2);
+//        rooms.add(room3);
+////System.out.println(room3.getId());
+//        menu();
+        UserRepositoryInterface userRepository = new UserRepositoryImpl();
+        UserServiceInterface userService = new UserServiceImpl( userRepository);
+
+        String lname = "Doe";
+        String fname = "John";
+        String cnie = "ee682859";
+        String password = "securepassword";
+
+        try {
+            userService.createUser(lname, fname, cnie, password);
+            System.out.println("User registered successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to register user");
+        }
     }
 
     public static void reservation(Chambre room) {
