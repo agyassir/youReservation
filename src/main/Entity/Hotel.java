@@ -14,6 +14,8 @@ public class Hotel {
         this.rate = 0;
     }
 
+    public Hotel(){}
+
     public int getId() {
         return id;
     }

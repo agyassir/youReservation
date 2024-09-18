@@ -1,5 +1,6 @@
 package main.Service.Implementation;
 
+import main.Entity.Customer;
 import main.Entity.User;
 import main.Repository.UserRepositoryInterface;
 import main.Service.UserServiceInterface;
@@ -12,7 +13,7 @@ public class UserServiceImpl implements UserServiceInterface {
     }
 
     @Override
-    public boolean checkUser(String cnie) {
+    public Customer checkUser(String cnie) {
         boolean use = user.checkUser(cnie);
         return user != null;
     }

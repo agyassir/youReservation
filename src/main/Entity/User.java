@@ -11,6 +11,8 @@ private String LastName;
         this.LastName = lastName;
     }
 
+    public User(){}
+
     public String getCnie() {
         return cnie;
     }

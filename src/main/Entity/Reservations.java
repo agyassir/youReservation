@@ -10,6 +10,12 @@ public class Reservations {
     private LocalDate checkout;
     private static int numberCounter=0;
 
+
+    public Reservations(){
+        System.out.println("dimakokab");
+    }
+
+
     public Reservations(Customer user, Chambre room, LocalDate checkin, LocalDate checkout) {
         this.id++;
         this.user = user;
@@ -18,8 +24,14 @@ public class Reservations {
         this.checkout = checkout;
     }
 
+
+
     public  int getId() {
         return id;
+    }
+
+    public  void setId(int id) {
+        Reservations.id = id;
     }
 
     public LocalDate getCheckin() {

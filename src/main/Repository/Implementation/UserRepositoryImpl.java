@@ -1,5 +1,6 @@
 package main.Repository.Implementation;
 
+import main.Entity.Customer;
 import main.Repository.UserRepositoryInterface;
 import main.Util.DBConnection;
 
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 public class UserRepositoryImpl implements UserRepositoryInterface {
 
     @Override
-    public boolean checkUser(String cnie){
+    public Customer checkUser(String cnie){
         boolean userExists = false;
 
         try {
@@ -31,7 +32,11 @@ public class UserRepositoryImpl implements UserRepositoryInterface {
 
             // If a row is returned, the user exists
             if (resultSet.next()) {
-                userExists = true;
+                Customer user = new Customer();
+                user.setFirstName(resultSet.getString("FrstName"));
+                user.setLastName(resultSet.getString("LastName"));
+                user.setCnie(cnie);
+                return user;
             }
 
             // Close the result set and statement
@@ -41,7 +46,6 @@ public class UserRepositoryImpl implements UserRepositoryInterface {
             e.printStackTrace();
         }
 
-        return userExists;
     }
 
         @Override

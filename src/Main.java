@@ -1,7 +1,18 @@
 import main.Entity.*;
+import main.Repository.ChamberRepoInterface;
+import main.Repository.HotelRepoInterface;
+import main.Repository.Implementation.ChamberRepoImpl;
+import main.Repository.Implementation.HotelRepoImple;
+import main.Repository.Implementation.ReservationRepoImpl;
 import main.Repository.Implementation.UserRepositoryImpl;
+import main.Repository.ReservationRepoInterface;
 import main.Repository.UserRepositoryInterface;
+import main.Service.ChamberServiceInterface;
+import main.Service.HotelServiceInterface;
+import main.Service.Implementation.ChamberServiceImpl;
+import main.Service.Implementation.HotelServiceImpl;
 import main.Service.Implementation.UserServiceImpl;
+import main.Service.ReservationService;
 import main.Service.UserServiceInterface;
 
 import java.time.LocalDate;
@@ -12,55 +23,47 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static ArrayList<Reservations> reservationsList = new ArrayList<>();
-    public static ArrayList<Hotel> Hotels = new ArrayList<>();
-    public static ArrayList<Chambre> rooms = new ArrayList<>();
+
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
-//        Hotel firstHotel = new Hotel("Ronaldo's Hotel", "Marrakech");
-//        Chambre room1 = new Chambre("Double Bed", firstHotel, 20);
-//        Chambre room2 = new Chambre("VIP", firstHotel, 10);
-//        Chambre room3 = new Chambre("Single Queen Bed", firstHotel, 50);
-//        Hotels.add(firstHotel);
-//        rooms.add(room1);
-//        rooms.add(room2);
-//        rooms.add(room3);
-////System.out.println(room3.getId());
-//        menu();
+
         UserRepositoryInterface userRepository = new UserRepositoryImpl();
-        UserServiceInterface userService = new UserServiceImpl( userRepository);
+        UserServiceInterface userService = new UserServiceImpl(userRepository);
+        ChamberRepoInterface chamberrepo=new ChamberRepoImpl();
+        ChamberServiceInterface chamberservice=new ChamberServiceImpl(chamberrepo);
+        HotelRepoInterface hotelRepo = new HotelRepoImple();
+        HotelServiceInterface hotelService = new HotelServiceImpl(hotelRepo);
+        ReservationRepoInterface resRepo= new ReservationRepoImpl();
+        ReservationService  reservationService=new main.Service.Implementation.ReservationService(resRepo);
+        menu(hotelService,chamberservice,reservationService,userService);
 
-        String lname = "Doe";
-        String fname = "John";
-        String cnie = "ee682859";
-        String password = "securepassword";
-
-        try {
-            userService.createUser(lname, fname, cnie, password);
-            System.out.println("User registered successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to register user");
-        }
     }
 
-    public static void reservation(Chambre room) {
-        System.out.print("Enter your first name: ");
-        scanner.nextLine();
-        String firstName = scanner.nextLine();  // Capture first name
-
-        // Ask for the user's last name
-        System.out.print("Enter your last name: ");
-        String lastName = scanner.nextLine();  // Capture last name
-
-        // Ask for the user's CNIE
+    public static void reservation(Chambre room,HotelServiceInterface hotelService,ChamberServiceInterface chamberservice,ReservationService reservationService,UserServiceInterface userService) {
         System.out.print("Enter your CNIE: ");
+        scanner.nextLine();
         String cnie = scanner.nextLine();
+        Customer user= userService.checkUser(cnie);
+        if(user.in){
 
-        User user = new User(cnie, firstName, lastName);
+        }
+        else {
 
+            System.out.print("Enter your first name: ");
+
+            String firstName = scanner.nextLine();  // Capture first name
+
+            // Ask for the user's last name
+            System.out.print("Enter your last name: ");
+            String lastName = scanner.nextLine();  // Capture last name
+
+            // Ask for the user's CNIE
+
+
+            Customer user = new Customer(cnie, firstName, lastName);
+        }
         System.out.print("Enter your check-in date (dd-MM-yyyy): ");
         String checkInInput = scanner.nextLine();
         LocalDate checkInDate = LocalDate.parse(checkInInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -70,48 +73,42 @@ public class Main {
         String checkOutInput = scanner.nextLine();
         LocalDate checkOutDate = LocalDate.parse(checkOutInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         Reservations reservation = new Reservations(user, room, checkInDate, checkOutDate);
-        boolean check = reservation.check(reservationsList, room, checkInDate, checkOutDate);
+        List<Reservations> reservationsList=reservationService.AllReservation();
+        boolean check = reservationService.checkReservationOverlap(reservationsList, room, checkInDate, checkOutDate);
         if (check) {
-            reservationsList.add(reservation);
+            reservationService.addReservation(reservation);
         } else {
             System.out.println("the room isnt available at that time");
-            menu();
+            menu(hotelService,chamberservice,reservationService,userService);
         }
 
     }
 
-    public static void roomsavailable(Hotel hotel) {
+    public static void roomsavailable(Hotel hotel,HotelServiceInterface hotelService,ChamberServiceInterface chamberservice,ReservationService reservationService,UserServiceInterface userService) {
 
-        ArrayList<Chambre> filteredRooms = new ArrayList<>();
+        List<Chambre> filteredRooms = chamberservice.findChambersByHotel(hotel);
 
-        // Iterate through the rooms and check the hotel ID
-        for (Chambre room : rooms) {
-            if (room.getHotel().getId() == hotel.getId()) {
-                filteredRooms.add(room);
-            }
-        }
         if (filteredRooms.isEmpty()) {
             System.out.println("No hotels available.");
         } else {
             System.out.println("0.back to the main menu");
-            filteredRooms.forEach(e -> System.out.println(e.getType()));
+            System.out.println("===============================================");
+            filteredRooms.forEach(e -> System.out.println(e.getType()+" "+e.getPrix()+"DH"));
             System.out.println("==========choose an a room you want to reserve==========");
             int choix = scanner.nextInt();
             if (choix == 0) {
-                menu();
+                menu(hotelService,chamberservice,reservationService,userService);
             } else {
-                reservation(filteredRooms.get(choix - 1));
+                reservation(filteredRooms.get(choix - 1),hotelService,chamberservice,reservationService,userService);
             }
         }
 
 
     }
 
-    public static void viewHotel() {
-        Affichage affichage = new Affichage();
-        List<Hotel> hotelList = affichage.viewHotel(Hotels);
+    public static void viewHotel(HotelServiceInterface hotelService,ChamberServiceInterface chamberservice,ReservationService reservationService,UserServiceInterface userService) {
+        List<Hotel> hotelList = hotelService.findAllHotels();
 
-        // Display hotel names
         if (hotelList.isEmpty()) {
             System.out.println("No hotels available.");
         } else {
@@ -120,12 +117,12 @@ public class Main {
 
             int choix = scanner.nextInt();
 
-            roomsavailable(hotelList.get(choix - 1));
+            roomsavailable(hotelList.get(choix - 1),hotelService,chamberservice,reservationService,userService);
 
         }
     }
 
-    public static void menu() {
+    public static void menu(HotelServiceInterface hotelService,ChamberServiceInterface chamberservice,ReservationService reservationService,UserServiceInterface userService) {
         int choice;
         do {
             System.out.println("Hotel ");
@@ -139,11 +136,11 @@ public class Main {
             switch (choice) {
                 case 1:
                     System.out.println("View the hotels available:");
-                    viewHotel();
+                    viewHotel(hotelService,chamberservice,reservationService,userService);
                     break;
                 case 2:
                     System.out.println("View your reservations:");
-                    viewReservation();
+                    viewReservation(hotelService,chamberservice,reservationService,userService);
                     break;
                 case 3:
                     System.out.println("Exiting the program...");
@@ -158,23 +155,17 @@ public class Main {
 
     }
 
-    public static void deleteReservation(Reservations reservation) {
-        reservationsList.removeIf(reservations -> reservations.getId() == reservation.getId());
+    public static void deleteReservation(Reservations reservation,ReservationService reservationService) {
+        reservationService.deleteReservation(reservation.getId());
         System.out.println("Reservation deleted successfully.");
     }
 
-    public static void viewReservation() {
+    public static void viewReservation(HotelServiceInterface hotelService,ChamberServiceInterface chamberservice,ReservationService reservationService,UserServiceInterface userService) {
         System.out.println("Please enter your CNIE:");
           // Consume leftover newline character from previous input
         String CNIE = scanner.nextLine();  // Assign input to class-level CNIE variable
-        ArrayList<Reservations> Myreservation = new ArrayList<>();
+        List<Reservations> Myreservation = reservationService.findReservationsByCnie(CNIE);
 
-        // Iterate through the rooms and check the hotel ID
-        for (Reservations reservations : reservationsList) {
-            if (reservations.getUser().getCnie().equals(CNIE) ) {
-                Myreservation.add(reservations);
-            }
-        }
         if (Myreservation.isEmpty()) {
             System.out.println("No resrvation available.");
         } else {
@@ -188,33 +179,28 @@ public class Main {
             int choix = scanner.nextInt();
             switch (choix) {
                 case 0:
-                menu();
+                menu(hotelService,chamberservice,reservationService,userService);
                 break;
                 case 1:
                     System.out.println("==============choose a reservation to change================");
                     int choice = scanner.nextInt();
-                    updateReservation(Myreservation.get(choice-1));
+                    updateReservation(Myreservation.get(choice-1),reservationService);
                 break;
                 case 2:
                     System.out.println("==============choose a reservation to delete================");
                      choice = scanner.nextInt();
-                    deleteReservation(Myreservation.get(choice-1));
+                    deleteReservation(Myreservation.get(choice-1),reservationService);
                     break;
                 default:
                 System.out.println("your choice may be incorrect");
                 break;
             }
-            return;
-            // Add your logic here to retrieve reservations for the provided CNIE
-        }
+           }
 
 
     }
 
-    public static void updateReservation(Reservations reservation) {
-        for (Reservations reservations : reservationsList) {
-            if (reservations.getId() == reservation.getId()) {
-
+    public static void updateReservation(Reservations reservation,ReservationService reservationService) {
                 System.out.println("Update Reservation");
                 System.out.println("1. Update First Name");
                 System.out.println("2. Update Last Name");
@@ -229,32 +215,16 @@ public class Main {
 
                 switch (choice) {
                     case 1:
-                        System.out.print("Enter new first name (leave blank to keep current): ");
-                        String newFirstName = scanner.nextLine();
-                        if (!newFirstName.isEmpty()) {
-                            reservations.getUser().setFirstName(newFirstName);
-                        }
-                        break;
-                    case 2:
-                        System.out.print("Enter new last name (leave blank to keep current): ");
-                        String newLastName = scanner.nextLine();
-                        if (!newLastName.isEmpty()) {
-                            reservations.getUser().setLastName(newLastName);
-                        }
-                        break;
-                    case 3:
-                        System.out.print("Enter new CNIE (leave blank to keep current): ");
-                        String newCnie = scanner.nextLine();
-                        if (!newCnie.isEmpty()) {
-                            reservations.getUser().setCnie(newCnie);
-                        }
-                        break;
-                    case 4:
                         System.out.print("Enter new check-in date (dd-MM-yyyy) (leave blank to keep current): ");
                         String checkInInput = scanner.nextLine();
                         if (!checkInInput.isEmpty()) {
                             LocalDate newCheckInDate = LocalDate.parse(checkInInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                            reservations.setCheckin(newCheckInDate);
+                            if (!newCheckInDate.isAfter(reservation.getCheckout())){
+                            reservation.setCheckin(newCheckInDate);}
+                            else{
+                                System.out.println("you cannot change the checkin to after the checkout,please change the chekcout first");
+                            updateReservation(reservation,reservationService);
+                            }
                         }
                         break;
                     case 5:
@@ -262,7 +232,7 @@ public class Main {
                         String checkOutInput = scanner.nextLine();
                         if (!checkOutInput.isEmpty()) {
                             LocalDate newCheckOutDate = LocalDate.parse(checkOutInput, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                            reservations.setCheckout(newCheckOutDate);
+                            reservation.setCheckout(newCheckOutDate);
                         }
                         break;
                     case 6:
@@ -272,14 +242,14 @@ public class Main {
                         System.out.println("Invalid choice. No updates made.");
                         return;
                 }
-                reservationsList.set(reservationsList.indexOf(reservation),reservation);
+                reservationService.updateReservation(reservation);
                 System.out.println("Reservation updated successfully.");
             }
         }
-    }
 
 
 
-}
+
+
 
 
